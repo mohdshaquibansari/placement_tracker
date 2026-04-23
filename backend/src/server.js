@@ -15,13 +15,26 @@ const server = http.createServer(app);
 initializeSocket(server);
 
 const startServer = async () => {
-  await connectMongo();
-  await seedAdmin();
-  scheduleDeadlineReminders();
+  try {
+    console.log("🚀 Starting server...");
 
-  server.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-  });
+    console.log("🔌 Connecting Mongo...");
+    await connectMongo();
+
+    console.log("👤 Seeding admin...");
+    await seedAdmin();
+
+    console.log("⏰ Starting scheduler...");
+    scheduleDeadlineReminders();
+
+    server.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("❌ Server startup failed:", error);
+    process.exit(1);
+  }
 };
 
 startServer().catch((error) => {
